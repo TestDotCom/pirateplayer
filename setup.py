@@ -13,7 +13,7 @@ setup(
         'spidev',
         'numpy',
         'st7789',
-        'pil-lite'
+        'pillow'
     ],
     entry_points='''
             [console_scripts]

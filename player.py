@@ -1,11 +1,14 @@
-# import miniaudio
 import logging
 from signal import pause
 
+import miniaudio
 from alsaaudio import Mixer
 from gpiozero import Button
 
-logging.basicConfig(level=logging.DEBUG)
+from display import display_clear, display_track
+
+logger = logging.getLogger('player')
+logger.setLevel(logging.DEBUG)
 
 m = Mixer()
 
@@ -16,6 +19,16 @@ isplaying = False
 def handle_play():
     global isplaying
     isplaying = not isplaying
+
+    stream = miniaudio.stream_file('samples/ShortCircuit.flac')
+    device = miniaudio.PlaybackDevice()
+
+    if isplaying:
+        display_track('samples/', 'Short Circuit')
+        device.start(stream)
+    else:
+        device.close()
+        display_clear()
 
     logging.debug(f'isplaying: {isplaying}')
 
@@ -41,7 +54,7 @@ def volume_dwn():
 
 
 def go_home():
-    return
+    pass
 
 
 def main():
@@ -61,3 +74,4 @@ def main():
         pause()
     except KeyboardInterrupt:
         print("\nclosing\n")
+        display_clear()
