@@ -3,10 +3,10 @@ import logging
 from PIL import Image, ImageFont, ImageDraw
 from ST7789 import ST7789
 
-logger = logging.getLogger('display')
-logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
+_logger = logging.getLogger('display')
 
-ds = ST7789(
+_ds = ST7789(
     rotation=90,
     port=0,
     cs=1,
@@ -15,35 +15,45 @@ ds = ST7789(
     spi_speed_hz=80 * 1000 * 1000
 )
 
-SIZE = (ds.width, ds.height)
+_SIZE = (_ds.width, _ds.height)
 
 
 def _draw_cover(path):
-    cover = Image.open(path + 'cover.png').convert('RGBA')
-    cover = cover.resize(SIZE)
-    ds.display(cover)
+    cover = None
+
+    try:
+        cover = Image.open(path + 'cover.png').convert('RGBA')
+        cover = cover.resize(_SIZE)
+        _ds.display(cover)
+    except FileNotFoundError:
+        _logger.debug('cover not found')
 
     return cover
 
 
 def _draw_text(string, pos, background=None):
-    txt = Image.new('RGBA', SIZE, (255, 255, 255, 0))
-    fnt = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 16)
+    out = None
 
-    d = ImageDraw.Draw(txt)
-    d.text(pos, string, font=fnt, fill=(255, 0, 0, 255))
+    try:
+        txt = Image.new('RGBA', _SIZE, (255, 255, 255, 0))
+        fnt = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 16)
 
-    if background is None:
-        background = Image.new('RGBA', SIZE, (118, 255, 3, 1))
+        d = ImageDraw.Draw(txt)
+        d.text(pos, string, font=fnt, fill=(255, 0, 0, 255))
 
-    out = Image.alpha_composite(background, txt)
-    ds.display(out)
+        if background is None:
+            background = Image.new('RGBA', _SIZE, (118, 255, 3, 1))
+
+        out = Image.alpha_composite(background, txt)
+        _ds.display(out)
+    except IOError:
+        _logger.debug('font not found')
 
     return out
 
 
 def display_clear():
-    ds.display(Image.new('RGB', SIZE))
+    _ds.display(Image.new('RGB', _SIZE))
 
 
 def display_track(path, title):

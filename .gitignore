@@ -1,3 +1,5 @@
 /pirateplayer.egg-info/
 /samples/
 /venv/
+/.idea
+/__pycache__
