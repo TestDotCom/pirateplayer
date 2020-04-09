@@ -1,12 +1,12 @@
 import logging
-from collections import namedtuple
 from signal import pause
 
 import miniaudio
 from alsaaudio import Mixer
-from gpiozero import Button
 
+from backend import Audio
 from display import display_clear, display_track
+from input import Input
 
 logging.basicConfig(level=logging.DEBUG)
 _logger = logging.getLogger('player')
@@ -19,11 +19,6 @@ def main():
 
     device = miniaudio.PlaybackDevice()
     stream = None
-
-    btn_a = Button(5)
-    btn_b = Button(6)
-    btn_x = Button(16)
-    btn_y = Button(20)
 
     def go_home():
         pass
@@ -39,14 +34,6 @@ def main():
 
         logging.debug(f'isplaying: {isplaying}')
 
-    def volume_up():
-        nonlocal volume
-        if volume < 100:
-            volume += 5
-
-        mixer.setvolume(volume)
-        logging.debug(f'volume: {mixer.getvolume()}')
-
     def volume_dwn():
         nonlocal volume
         if volume > 0:
@@ -55,17 +42,21 @@ def main():
         mixer.setvolume(volume)
         logging.debug(f'volume: {mixer.getvolume()}')
 
+    def volume_up():
+        nonlocal volume
+        if volume < 100:
+            volume += 5
+
+        mixer.setvolume(volume)
+        logging.debug(f'volume: {mixer.getvolume()}')
+
     try:
-        btn_a.when_pressed = go_home
-        btn_x.when_pressed = handle_play
-        btn_b.when_pressed = volume_dwn
-        btn_y.when_pressed = volume_up
+        inp = Input()
+        inp.setup([go_home, handle_play, volume_dwn, volume_up])
 
         mixer.setvolume(volume)
 
-        Audio = namedtuple('Audio', 'path, title, fmt')
         audio = Audio('samples/', 'ShortCircuit', 'flac')
-
         miniaudio.stream_file(audio.path + audio.title + '.' + audio.fmt)
         display_track(audio.path, audio.title)
 
