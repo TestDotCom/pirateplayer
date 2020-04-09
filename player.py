@@ -1,8 +1,8 @@
 import logging
 from signal import pause
 
-import miniaudio
-from alsaaudio import Mixer
+from alsaaudio import Mixer, ALSAAudioError
+from miniaudio import PlaybackDevice, stream_file, MiniaudioError
 
 from backend import Audio
 from display import display_clear, display_track
@@ -13,11 +13,8 @@ _logger = logging.getLogger('player')
 
 
 def main():
-    mixer = Mixer()
     volume = 5
     isplaying = False
-
-    device = miniaudio.PlaybackDevice()
     stream = None
 
     def go_home():
@@ -51,18 +48,25 @@ def main():
         logging.debug(f'volume: {mixer.getvolume()}')
 
     try:
+        mixer = Mixer()
+        mixer.setvolume(volume)
+
+        device = PlaybackDevice()
+
         inp = Input()
         inp.setup([go_home, handle_play, volume_dwn, volume_up])
 
-        mixer.setvolume(volume)
-
         audio = Audio('samples/', 'ShortCircuit', 'flac')
-        miniaudio.stream_file(audio.path + audio.title + '.' + audio.fmt)
+        stream_file(audio.path + audio.title + '.' + audio.fmt)
         display_track(audio.path, audio.title)
 
         pause()
+    except ALSAAudioError:
+        _logger.debug('default mixer not found')
+    except MiniaudioError:
+        _logger.debug('default playback device not found')
     except KeyboardInterrupt:
-        _logger.debug('closing')
-
+        _logger.debug('CTRL-C signal')
+    finally:
         device.close()
         display_clear()

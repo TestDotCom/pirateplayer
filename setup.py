@@ -13,7 +13,8 @@ setup(
         'spidev',
         'numpy',
         'st7789',
-        'pillow'
+        'pillow',
+        'pylint'
     ],
     entry_points='''
             [console_scripts]
