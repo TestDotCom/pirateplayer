@@ -14,14 +14,15 @@ setup(
         'numpy',
         'st7789',
         'pillow',
-        'pylint'
+        'pylint',
+        'autopep8'
     ],
     entry_points='''
             [console_scripts]
             pirateplayer=player:main
         ''',
-    url='',
-    license='',
+    url='https://github.com/TestDotCom/pirateplayer',
+    license='MIT',
     author='TestDotCom',
     author_email='',
     description='Play offline music on PirateAudio'

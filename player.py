@@ -4,12 +4,12 @@ from signal import pause
 from alsaaudio import Mixer, ALSAAudioError
 from miniaudio import PlaybackDevice, stream_file, MiniaudioError
 
-from backend import Audio
+#from console import Audio
 from display import display_clear, display_track
-from input import Input
+from inputmap import Input
 
 logging.basicConfig(level=logging.DEBUG)
-_logger = logging.getLogger('player')
+_LOGGER = logging.getLogger('player')
 
 
 def main():
@@ -29,7 +29,7 @@ def main():
         else:
             device.stop()
 
-        logging.debug(f'isplaying: {isplaying}')
+        logging.debug('isplaying: %r', isplaying)
 
     def volume_dwn():
         nonlocal volume
@@ -37,7 +37,7 @@ def main():
             volume -= 5
 
         mixer.setvolume(volume)
-        logging.debug(f'volume: {mixer.getvolume()}')
+        logging.debug('volume: %r', mixer.getvolume())
 
     def volume_up():
         nonlocal volume
@@ -45,7 +45,7 @@ def main():
             volume += 5
 
         mixer.setvolume(volume)
-        logging.debug(f'volume: {mixer.getvolume()}')
+        logging.debug('volume: %r', mixer.getvolume())
 
     try:
         mixer = Mixer()
@@ -54,19 +54,19 @@ def main():
         device = PlaybackDevice()
 
         inp = Input()
-        inp.setup([go_home, handle_play, volume_dwn, volume_up])
+        inp.map_buttons([go_home, handle_play, volume_dwn, volume_up])
 
-        audio = Audio('samples/', 'ShortCircuit', 'flac')
-        stream_file(audio.path + audio.title + '.' + audio.fmt)
-        display_track(audio.path, audio.title)
+        #audio = Audio('samples/', 'ShortCircuit', 'flac')
+        #stream_file(audio.path + audio.title + '.' + audio.fmt)
+        #display_track(audio.path, audio.title)
 
         pause()
     except ALSAAudioError:
-        _logger.debug('default mixer not found')
+        _LOGGER.debug('default mixer not found')
     except MiniaudioError:
-        _logger.debug('default playback device not found')
+        _LOGGER.debug('default playback device not found')
     except KeyboardInterrupt:
-        _logger.debug('CTRL-C signal')
+        _LOGGER.debug('CTRL-C signal')
     finally:
         device.close()
         display_clear()

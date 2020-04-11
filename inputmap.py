@@ -3,7 +3,7 @@ import logging
 from gpiozero import Button
 
 logging.basicConfig(level=logging.DEBUG)
-_logger = logging.getLogger('input')
+_LOGGER = logging.getLogger('input')
 
 
 class Input:
@@ -15,6 +15,6 @@ class Input:
             Button(20)  # Y
         ]
 
-    def setup(self, handlers):
+    def map_buttons(self, handlers):
         for button, handler in zip(self.__buttons, handlers):
             button.when_pressed = handler
