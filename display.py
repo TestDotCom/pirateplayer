@@ -4,7 +4,7 @@ from PIL import Image, ImageFont, ImageDraw
 from ST7789 import ST7789
 
 logging.basicConfig(level=logging.DEBUG)
-_LOGGER = logging.getLogger('display')
+_LOGGER = logging.getLogger(__name__)
 
 _DS = ST7789(
     rotation=90,
@@ -60,3 +60,8 @@ def display_clear():
 def display_track(path, title):
     cover = _draw_cover(path)
     _draw_text(title, (0, 0), cover)
+
+
+def display_menu(filenames):
+    for file in filenames:
+        pass

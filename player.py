@@ -1,72 +1,42 @@
 import logging
+import os
 from signal import pause
 
-from alsaaudio import Mixer, ALSAAudioError
-from miniaudio import PlaybackDevice, stream_file, MiniaudioError
-
-#from console import Audio
-from display import display_clear, display_track
-from inputmap import Input
+from display import display_clear, display_track, display_menu
+from inputmap import map_buttons
+from library import make_index, list_files
+from gstreamer import GStreamer
 
 logging.basicConfig(level=logging.DEBUG)
-_LOGGER = logging.getLogger('player')
+_LOGGER = logging.getLogger(__name__)
 
 
 def main():
-    volume = 5
-    isplaying = False
-    stream = None
-
-    def go_home():
+    def move_up():
         pass
 
-    def handle_play():
-        nonlocal isplaying
-        isplaying = not isplaying
+    def move_dwn():
+        pass
 
-        if isplaying:
-            device.start(stream)
-        else:
-            device.stop()
+    def select():
+        pass
 
-        logging.debug('isplaying: %r', isplaying)
-
-    def volume_dwn():
-        nonlocal volume
-        if volume > 0:
-            volume -= 5
-
-        mixer.setvolume(volume)
-        logging.debug('volume: %r', mixer.getvolume())
-
-    def volume_up():
-        nonlocal volume
-        if volume < 100:
-            volume += 5
-
-        mixer.setvolume(volume)
-        logging.debug('volume: %r', mixer.getvolume())
+    def go_back():
+        pass
 
     try:
-        mixer = Mixer()
-        mixer.setvolume(volume)
+        #gst = GStreamer()
+        #map_buttons([None, gst.play, None, None])
 
-        device = PlaybackDevice()
+        #gst.run('file:///usr/share/sounds/alsa/Front_Center.wav')
 
-        inp = Input()
-        inp.map_buttons([go_home, handle_play, volume_dwn, volume_up])
+        current_dir = os.path.expanduser('~/Music')
+        make_index(current_dir)
 
-        #audio = Audio('samples/', 'ShortCircuit', 'flac')
-        #stream_file(audio.path + audio.title + '.' + audio.fmt)
-        #display_track(audio.path, audio.title)
+        display_menu(list_files(current_dir))
 
         pause()
-    except ALSAAudioError:
-        _LOGGER.debug('default mixer not found')
-    except MiniaudioError:
-        _LOGGER.debug('default playback device not found')
     except KeyboardInterrupt:
         _LOGGER.debug('CTRL-C signal')
     finally:
-        device.close()
         display_clear()
