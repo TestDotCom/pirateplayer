@@ -1,21 +1,20 @@
-from enum import Enum
 import logging
 
 import gi
 gi.require_version('Gst', '1.0')
 from gi.repository import GLib, Gst
 
-logging.basicConfig(level=logging.DEBUG)
-_LOGGER = logging.getLogger(__name__)
 
+class GStreamer():
 
-class GStreamer:
-    
     def __init__(self):
         Gst.init(None)
 
-        sink = Gst.ElementFactory.make('alsasink', 'sink')
-        self._player = Gst.ElementFactory.make('playbin', 'pirateplayer')
+        logging.basicConfig(level=logging.DEBUG)
+        self._LOGGER = logging.getLogger(__name__)
+
+        sink = Gst.ElementFactory.make('alsasink', 'sink')  # pirate-audio hat
+        self._player = Gst.ElementFactory.make('playbin', 'player')
         self._player.set_property('audio-sink', sink)
 
         self._loop = GLib.MainLoop()
@@ -30,20 +29,20 @@ class GStreamer:
         mtype = message.type
 
         if mtype == Gst.MessageType.EOS:
-            _LOGGER.debug("End of stream")
+            self._LOGGER.debug("End of stream")
             self.stop()
             loop.quit()
         elif mtype == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
-            _LOGGER.error(err)
-            _LOGGER.debug(debug)
+            self._LOGGER.error(err)
+            self._LOGGER.debug(debug)
 
             self.stop()
             loop.quit()
         elif mtype == Gst.MessageType.WARNING:
             err, debug = message.parse_warning()
-            _LOGGER.error(err)
-            _LOGGER.debug(debug)
+            self._LOGGER.error(err)
+            self._LOGGER.debug(debug)
 
     def run(self, uri):
         self._player.set_property('uri', uri)
