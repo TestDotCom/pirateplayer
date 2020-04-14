@@ -16,6 +16,7 @@ _DS = ST7789(
 )
 
 _SIZE = (_DS.width, _DS.height)
+CURSOR = 0
 
 
 def _draw_cover(path):
@@ -63,5 +64,23 @@ def display_track(path, title):
 
 
 def display_menu(filenames):
-    for file in filenames:
-        pass
+    global CURSOR
+
+    img = Image.new('RGB', _SIZE)
+    font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 16)
+
+    color_fg = (255, 255, 255)
+    color_bg = (0, 0, 0)
+
+    draw = ImageDraw.Draw(img)
+
+    for index, name in enumerate(filenames):
+        size_x, size_y = draw.textsize(name, font)
+
+        if index == CURSOR:
+            draw.rectangle((0, size_y * index, size_x, size_y * (index + 1)), fill=color_fg)
+            draw.text((0, size_y * index), name, font=font, fill=color_bg)
+        else:
+            draw.text((0, size_y * index), name, font=font, fill=color_fg)
+
+    _DS.display(img)
