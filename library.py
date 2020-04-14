@@ -20,5 +20,7 @@ def list_files(dirname):
     return _filetree[dirname]
 
 
+'''
 def get_index(dirpath, filename):
     return _filetree[dirpath].index(filename)
+'''

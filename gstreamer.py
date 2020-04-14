@@ -8,10 +8,10 @@ from gi.repository import GLib, Gst
 class GStreamer():
 
     def __init__(self):
-        Gst.init(None)
-
         logging.basicConfig(level=logging.DEBUG)
         self._LOGGER = logging.getLogger(__name__)
+
+        Gst.init(None)
 
         sink = Gst.ElementFactory.make('alsasink', 'sink')  # pirate-audio hat
         self._player = Gst.ElementFactory.make('playbin', 'player')
