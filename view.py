@@ -14,8 +14,8 @@ class View:
         self.menulen = len(filenames)
 
         # display up to N files per screen
-        self.upper = 0
-        self.lower = 11
+        self._upper = 0
+        self._lower = 10
 
         self._ds = ST7789(
             rotation=90,
@@ -28,6 +28,16 @@ class View:
 
         self._size = (self._ds.width, self._ds.height)
         self.cursor = 0
+
+    def _update_edges(self):
+        if self.cursor < self._upper:
+            self._lower = self._upper
+            self._upper -= self._lower
+        elif self.cursor >= self._lower:
+            self._upper = self._lower
+            self._lower += self._upper
+
+        self.display_menu()
 
     def display_clear(self):
         self._ds.display(Image.new('RGB', self._size))
@@ -57,25 +67,25 @@ class View:
 
         draw = ImageDraw.Draw(img)
 
-        for index, name in enumerate(self.menu[self.upper:self.lower]):
+        for index, name in enumerate(self.menu[self._upper:self._lower]):
             size_x, size_y = draw.textsize(name, font)
+            offset = index % 10
 
-            if index == self.cursor:
-                draw.rectangle((0, 24 * index, size_x, 24 * (index + 1)), fill=color_fg)
-                draw.text((0, 24 * index), name, font=font, fill=color_bg)
+            if offset == self.cursor % 10:
+                draw.rectangle((0, 24 * offset, size_x, 24 * (offset + 1)), fill=color_fg)
+                draw.text((0, 24 * offset), name, font=font, fill=color_bg)
             else:
-                draw.text((0, 24 * index), name, font=font, fill=color_fg)
+                draw.text((0, 24 * offset), name, font=font, fill=color_fg)
 
         self._ds.display(img)
 
     def cursor_up(self):
         if self.cursor == 0:
             self.cursor = self.menulen
-        self.cursor -= 1
 
-        self.display_menu()
+        self.cursor -= 1
+        self._update_edges()
 
     def cursor_dwn(self):
         self.cursor = (self.cursor + 1) % self.menulen
-
-        self.display_menu()
+        self._update_edges()

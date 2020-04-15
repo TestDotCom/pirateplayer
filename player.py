@@ -32,7 +32,9 @@ def main():
 
     def stop_playing():
         gst.stop()
-        # TODO: return to console menu
+        view.display_menu()
+
+        map_buttons([view.cursor_up, view.cursor_dwn, select, go_back])
 
     def select():
         media = library.get_file(view.cursor)
