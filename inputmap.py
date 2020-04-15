@@ -2,8 +2,8 @@ import logging
 
 from gpiozero import Button
 
-logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG)
 
 _buttons = [
     Button(5),  # A

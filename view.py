@@ -7,11 +7,15 @@ from ST7789 import ST7789
 class View:
 
     def __init__(self, filenames):
-        logging.basicConfig(level=logging.DEBUG)
-        self._logger = logging.getLogger(__name__)
+        self._LOGGER = logging.getLogger(__name__)
+        self._LOGGER.setLevel(logging.DEBUG)
 
-        self._filenames = filenames
-        self._len = len(filenames)
+        self.menu = filenames
+        self.menulen = len(filenames)
+
+        # display up to N files per screen
+        self.upper = 0
+        self.lower = 11
 
         self._ds = ST7789(
             rotation=90,
@@ -30,7 +34,7 @@ class View:
 
     def display_track(self, path, title):
         try:
-            cover = Image.open(path + 'cover.png')
+            cover = Image.open(path + '/' + 'cover.png')
             cover = cover.resize(self._size)
 
             font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 16)
@@ -40,37 +44,38 @@ class View:
 
             self._ds.display(cover)
         except FileNotFoundError as fnf:
-            self._logger.debug(fnf)
+            self._LOGGER.debug(fnf)
         except IOError as ioe:
-            self._logger.debug(ioe)
+            self._LOGGER.debug(ioe)
 
     def display_menu(self):
         img = Image.new('RGB', self._size)
-        font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 16)
+        font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
 
         color_fg = (255, 255, 255)
         color_bg = (0, 0, 0)
 
         draw = ImageDraw.Draw(img)
 
-        for index, name in enumerate(self._filenames):
+        for index, name in enumerate(self.menu[self.upper:self.lower]):
             size_x, size_y = draw.textsize(name, font)
 
             if index == self.cursor:
-                draw.rectangle((0, size_y * index, size_x, size_y * (index + 1)), fill=color_fg)
-                draw.text((0, size_y * index), name, font=font, fill=color_bg)
+                draw.rectangle((0, 24 * index, size_x, 24 * (index + 1)), fill=color_fg)
+                draw.text((0, 24 * index), name, font=font, fill=color_bg)
             else:
-                draw.text((0, size_y * index), name, font=font, fill=color_fg)
+                draw.text((0, 24 * index), name, font=font, fill=color_fg)
 
         self._ds.display(img)
 
     def cursor_up(self):
         if self.cursor == 0:
-            self.cursor = self._len
+            self.cursor = self.menulen
         self.cursor -= 1
 
         self.display_menu()
 
     def cursor_dwn(self):
-        self.cursor = (self.cursor + 1) % self._len
+        self.cursor = (self.cursor + 1) % self.menulen
+
         self.display_menu()
