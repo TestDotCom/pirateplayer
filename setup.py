@@ -14,6 +14,7 @@ setup(
         'pillow',
         'vext',
         'vext.gi',
+        'mutagen',
         'pylint',
         'autopep8'
     ],

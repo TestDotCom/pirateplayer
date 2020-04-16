@@ -1,10 +1,9 @@
-from collections import deque
 import logging
 import os
 from signal import pause
 
 from view import View
-from inputmap import map_buttons
+from inputmap import set_state, map_buttons, PlayerState
 from library import Library, Media
 from gstreamer import GStreamer
 
@@ -24,17 +23,11 @@ def main():
     def go_back():
         pass
 
-    def next_track():
-        pass
-
-    def previous_track():
-        pass
-
     def stop_playing():
         gst.stop()
         view.display_menu()
 
-        map_buttons([view.cursor_up, view.cursor_dwn, select, go_back])
+        map_buttons(PlayerState.BROWSING)
 
     def select():
         media = library.get_file(view.cursor)
@@ -51,9 +44,12 @@ def main():
             view.display_track(media.path, media.name)
             gst.run('file://' + media.path + '/' + media.name)
 
-            map_buttons([stop_playing, previous_track, gst.play, next_track])
+            map_buttons(PlayerState.PLAYING)
 
-    map_buttons([view.cursor_up, view.cursor_dwn, select, go_back])
+    set_state(PlayerState.BROWSING, [view.cursor_up, view.cursor_dwn, select, go_back])
+    set_state(PlayerState.PLAYING, [stop_playing, gst.volume_dwn, gst.play, gst.volume_up])
+
+    map_buttons(PlayerState.BROWSING)
 
     try:
         pause()

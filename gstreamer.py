@@ -45,7 +45,7 @@ class GStreamer():
         self._player.set_state(Gst.State.PLAYING)
 
     def play(self):
-        state_change, state, pending = self._player.get_state()
+        _, state, _ = self._player.get_state(Gst.CLOCK_TIME_NONE)
 
         if state == Gst.State.PAUSED:
             self._player.set_state(Gst.State.PLAYING)
@@ -55,8 +55,12 @@ class GStreamer():
     def stop(self):
         self._player.set_state(Gst.State.NULL)
 
-    def set_volume(self, level):
-        self._player.set_property('volume', level)
+    def volume_up(self):
+        volume = self._player.get_property('volume')
+        if volume < 1:
+            self._player.set_property('volume', volume + 0.1)
 
-    def get_volume(self):
-        return self._player.get_property('volume')
+    def volume_dwn(self):
+        volume = self._player.get_property('volume')
+        if volume > 0:
+            self._player.set_property('volume', volume - 0.1)

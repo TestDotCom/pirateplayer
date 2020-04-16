@@ -1,5 +1,6 @@
 import logging
 
+import mutagen
 from PIL import Image, ImageFont, ImageDraw
 from ST7789 import ST7789
 
@@ -29,6 +30,9 @@ class View:
         self._size = (self._ds.width, self._ds.height)
         self.cursor = 0
 
+        self._color_bg = (0, 0, 0)
+        self._color_fg = (255, 255, 255)
+
     def _update_edges(self):
         if self.cursor < self._upper:
             self._lower = self._upper
@@ -42,15 +46,20 @@ class View:
     def display_clear(self):
         self._ds.display(Image.new('RGB', self._size))
 
-    def display_track(self, path, title):
+    def display_track(self, path, media):
         try:
             cover = Image.open(path + '/' + 'cover.png')
             cover = cover.resize(self._size)
 
-            font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 16)
+            font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
 
             draw = ImageDraw.Draw(cover)
-            draw.text((0, 0), title, font=font, fill=(255, 255, 255))
+
+            info = mutagen.File(path + '/' + media)
+
+            draw.text((0, 0), info['album'][0], font=font, fill=self._color_fg)
+            draw.text((0, self._size[0] - 48), info['title'][0], font=font, fill=self._color_fg)
+            draw.text((0, self._size[0] - 24), info['artist'][0], font=font, fill=self._color_fg)
 
             self._ds.display(cover)
         except FileNotFoundError as fnf:
@@ -62,9 +71,6 @@ class View:
         img = Image.new('RGB', self._size)
         font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
 
-        color_fg = (255, 255, 255)
-        color_bg = (0, 0, 0)
-
         draw = ImageDraw.Draw(img)
 
         for index, name in enumerate(self.menu[self._upper:self._lower]):
@@ -72,10 +78,10 @@ class View:
             offset = index % 10
 
             if offset == self.cursor % 10:
-                draw.rectangle((0, 24 * offset, size_x, 24 * (offset + 1)), fill=color_fg)
-                draw.text((0, 24 * offset), name, font=font, fill=color_bg)
+                draw.rectangle((0, 24 * offset, size_x, 24 * (offset + 1)), fill=self._color_fg)
+                draw.text((0, 24 * offset), name, font=font, fill=self._color_bg)
             else:
-                draw.text((0, 24 * offset), name, font=font, fill=color_fg)
+                draw.text((0, 24 * offset), name, font=font, fill=self._color_fg)
 
         self._ds.display(img)
 
