@@ -11,29 +11,41 @@ class Library:
         self._LOGGER = logging.getLogger(__name__)
         self._LOGGER.setLevel(logging.DEBUG)
 
+        self._dirpath = list()
+        self._dirpath.append(root + '/')
+
         self._filetree = defaultdict()
-        self._current_dir = root
 
         ext = ('wav', 'flac', 'ogg', 'aac', 'mp3')
 
-        for dirpath, dirnames, filenames in os.walk(self._current_dir):
-            self._filetree[dirpath] = sorted(dirnames) + \
-                    list(file for file in sorted(filenames) if file.endswith(ext))
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirpath += '/'
+            dirnames = list(dn + '/' for dn in sorted(dirnames))
+            filenames = list(fn for fn in sorted(filenames))
+
+            self._filetree[dirpath] = dirnames + filenames
 
     def list_files(self):
-        return self._filetree[self._current_dir]
+        abspath = ''.join(self._dirpath)
+        return self._filetree[abspath]
 
-    def get_file(self, index):
+    def get_next(self, index):
         filename = self.list_files()[index]
-        filepath = os.path.join(self._current_dir, filename)
+        filepath = ''.join(self._dirpath)
+        abspath = filepath + filename
 
-        self._LOGGER.debug('selected path: %s', filepath)
+        self._LOGGER.debug('filename = %s, filepath = %s, abspath = %s', filename, filepath, abspath)
 
         media = None
 
-        if os.path.isfile(filepath):
-            media = Media(path=self._current_dir, name=filename)
+        if os.path.isfile(abspath):
+            media = Media(path=filepath, name=filename)
         else:
-            self._current_dir = filepath
+            self._dirpath.append(filename)
 
         return media
+
+    def get_previous(self):
+        # don't go further than root dir
+        if len(self._dirpath) > 1:
+            self._dirpath.pop()

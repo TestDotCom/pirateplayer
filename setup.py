@@ -23,7 +23,7 @@ setup(
             pirateplayer=player:main
         ''',
     url='https://github.com/TestDotCom/pirateplayer',
-    license='MIT',
+    license='MIT License',
     author='TestDotCom',
     author_email='',
     description='Play offline music on PirateAudio'

@@ -21,22 +21,19 @@ def main():
     view.display_menu()
 
     def go_back():
-        pass
+        library.get_previous()
+        menu = library.list_files()
 
-    def stop_playing():
-        gst.stop()
+        view.update_menu(menu)
         view.display_menu()
 
-        map_buttons(PlayerState.BROWSING)
-
     def select():
-        media = library.get_file(view.cursor)
+        media = library.get_next(view.cursor)
 
         if media is None:
-            view.menu = library.list_files()
-            view.menulen = len(view.menu)
-            view.cursor = 0
-
+            menu = library.list_files()
+            
+            view.update_menu(menu)
             view.display_menu()
         else:
             _LOGGER.debug('path: %s, file: %s', media.path, media.name)
@@ -45,6 +42,12 @@ def main():
             gst.run('file://' + media.path + '/' + media.name)
 
             map_buttons(PlayerState.PLAYING)
+    
+    def stop_playing():
+        gst.stop()
+        view.display_menu()
+
+        map_buttons(PlayerState.BROWSING)
 
     set_state(PlayerState.BROWSING, [view.cursor_up, view.cursor_dwn, select, go_back])
     set_state(PlayerState.PLAYING, [stop_playing, gst.volume_dwn, gst.play, gst.volume_up])

@@ -11,13 +11,19 @@ class View:
         self._LOGGER = logging.getLogger(__name__)
         self._LOGGER.setLevel(logging.DEBUG)
 
-        self.menu = filenames
-        self.menulen = len(filenames)
+        try:
+            self._font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
+        except IOError as ioe:
+            self._LOGGER.debug(ioe)
+
+        self._menu = filenames
+        self._menulen = len(filenames)
 
         # display up to N files per screen
         self._upper = 0
         self._lower = 10
 
+        # PirateAudio setup
         self._ds = ST7789(
             rotation=90,
             port=0,
@@ -51,47 +57,47 @@ class View:
             cover = Image.open(path + '/' + 'cover.png')
             cover = cover.resize(self._size)
 
-            font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
-
             draw = ImageDraw.Draw(cover)
-
             info = mutagen.File(path + '/' + media)
 
-            draw.text((0, 0), info['album'][0], font=font, fill=self._color_fg)
-            draw.text((0, self._size[0] - 48), info['title'][0], font=font, fill=self._color_fg)
-            draw.text((0, self._size[0] - 24), info['artist'][0], font=font, fill=self._color_fg)
+            draw.text((0, 0), info['album'][0], font=self._font, fill=self._color_fg)
+            draw.text((0, self._size[0] - 48), info['title'][0], font=self._font, fill=self._color_fg)
+            draw.text((0, self._size[0] - 24), info['artist'][0], font=self._font, fill=self._color_fg)
 
             self._ds.display(cover)
         except FileNotFoundError as fnf:
             self._LOGGER.debug(fnf)
-        except IOError as ioe:
-            self._LOGGER.debug(ioe)
+        except mutagen.MutagenError as mge:
+            self._LOGGER.debug(mge)
+
+    def update_menu(self, menu):
+        self._menu = menu
+        self._menulen = len(menu)
+        self.cursor = 0
 
     def display_menu(self):
         img = Image.new('RGB', self._size)
-        font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
-
         draw = ImageDraw.Draw(img)
 
-        for index, name in enumerate(self.menu[self._upper:self._lower]):
-            size_x, size_y = draw.textsize(name, font)
+        for index, name in enumerate(self._menu[self._upper:self._lower]):
+            size_x, size_y = draw.textsize(name, self._font)
             offset = index % 10
 
             if offset == self.cursor % 10:
                 draw.rectangle((0, 24 * offset, size_x, 24 * (offset + 1)), fill=self._color_fg)
-                draw.text((0, 24 * offset), name, font=font, fill=self._color_bg)
+                draw.text((0, 24 * offset), name, font=self._font, fill=self._color_bg)
             else:
-                draw.text((0, 24 * offset), name, font=font, fill=self._color_fg)
+                draw.text((0, 24 * offset), name, font=self._font, fill=self._color_fg)
 
         self._ds.display(img)
 
     def cursor_up(self):
         if self.cursor == 0:
-            self.cursor = self.menulen
+            self.cursor = self._menulen
 
         self.cursor -= 1
         self._update_edges()
 
     def cursor_dwn(self):
-        self.cursor = (self.cursor + 1) % self.menulen
+        self.cursor = (self.cursor + 1) % self._menulen
         self._update_edges()
