@@ -7,17 +7,18 @@ from ST7789 import ST7789
 
 class View:
 
-    def __init__(self, filenames):
+    def __init__(self):
         self._LOGGER = logging.getLogger(__name__)
         self._LOGGER.setLevel(logging.DEBUG)
 
+        self._menu = list()
+        self._menulen = 0
+        self.cursor = 0
+
         try:
-            self._font = ImageFont.truetype('fonts/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
+            self._font = ImageFont.truetype('assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
         except IOError as ioe:
             self._LOGGER.debug(ioe)
-
-        self._menu = filenames
-        self._menulen = len(filenames)
 
         # display up to N files per screen
         self._upper = 0
@@ -34,7 +35,6 @@ class View:
         )
 
         self._size = (self._ds.width, self._ds.height)
-        self.cursor = 0
 
         self._color_bg = (0, 0, 0)
         self._color_fg = (255, 255, 255)
@@ -75,6 +75,9 @@ class View:
         self._menulen = len(menu)
         self.cursor = 0
 
+        self._upper = 0
+        self._lower = 10
+
     def display_menu(self):
         img = Image.new('RGB', self._size)
         draw = ImageDraw.Draw(img)
@@ -101,3 +104,12 @@ class View:
     def cursor_dwn(self):
         self.cursor = (self.cursor + 1) % self._menulen
         self._update_edges()
+
+    def display_logo(self):
+        try:
+            logo = Image.open('assets/logo.png')
+            logo = logo.resize(self._size)
+
+            self._ds.display(logo)
+        except FileNotFoundError as fnf:
+            self._LOGGER.debug(fnf)

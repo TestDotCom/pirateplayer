@@ -7,18 +7,17 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.DEBUG)
 
 _CALLBACKS = [None] * 2
-
-_BUTTONS = [
-    Button(5),  # A
-    Button(6),  # B
-    Button(16),  # X
-    Button(20)  # Y
-]
+_BUTTONS = [None] * 4
 
 
 class PlayerState:
     PLAYING = 0
     BROWSING = 1
+
+
+def set_buttons(pins):
+    for index, pin in enumerate(pins):
+        _BUTTONS[index] = Button(pin)
 
 
 def set_state(state, handlers):

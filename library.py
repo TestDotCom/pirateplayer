@@ -21,7 +21,7 @@ class Library:
         for dirpath, dirnames, filenames in os.walk(root):
             dirpath += '/'
             dirnames = list(dn + '/' for dn in sorted(dirnames))
-            filenames = list(fn for fn in sorted(filenames))
+            filenames = list(fn for fn in sorted(filenames) if fn.endswith(ext))
 
             self._filetree[dirpath] = dirnames + filenames
 
@@ -46,6 +46,5 @@ class Library:
         return media
 
     def get_previous(self):
-        # don't go further than root dir
         if len(self._dirpath) > 1:
             self._dirpath.pop()
