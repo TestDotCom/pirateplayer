@@ -5,7 +5,7 @@ from signal import pause
 
 from view import View
 from inputmap import PlayerState, set_buttons, set_state, map_buttons
-from library import Library, Media
+from library import Library
 from gstreamer import GStreamer
 
 
@@ -53,8 +53,12 @@ def main():
 
         map_buttons(PlayerState.BROWSING)
 
-    set_state(PlayerState.BROWSING, [view.cursor_up, view.cursor_dwn, select, go_back])
-    set_state(PlayerState.PLAYING, [stop_playing, gst.volume_dwn, gst.play, gst.volume_up])
+    set_state(
+        PlayerState.BROWSING, [
+            view.cursor_up, view.cursor_dwn, select, go_back])
+    set_state(
+        PlayerState.PLAYING, [
+            stop_playing, gst.volume_dwn, gst.play, gst.volume_up])
 
     buttons = list(config['BUTTON'].getint(btn) for btn in config['BUTTON'])
     set_buttons(buttons)

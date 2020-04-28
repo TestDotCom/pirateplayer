@@ -21,7 +21,8 @@ class Library:
         for dirpath, dirnames, filenames in os.walk(root):
             dirpath += '/'
             dirnames = list(dn + '/' for dn in sorted(dirnames))
-            filenames = list(fn for fn in sorted(filenames) if fn.endswith(ext))
+            filenames = list(fn for fn in sorted(
+                filenames) if fn.endswith(ext))
 
             self._filetree[dirpath] = dirnames + filenames
 
@@ -34,7 +35,11 @@ class Library:
         filepath = ''.join(self._dirpath)
         abspath = filepath + filename
 
-        self._LOGGER.debug('filename = %s, filepath = %s, abspath = %s', filename, filepath, abspath)
+        self._LOGGER.debug(
+            'filename = %s, filepath = %s, abspath = %s',
+            filename,
+            filepath,
+            abspath)
 
         media = None
 

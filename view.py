@@ -16,7 +16,8 @@ class View:
         self.cursor = 0
 
         try:
-            self._font = ImageFont.truetype('assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
+            self._font = ImageFont.truetype(
+                'assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
         except IOError as ioe:
             self._LOGGER.debug(ioe)
 
@@ -60,9 +61,20 @@ class View:
             draw = ImageDraw.Draw(cover)
             info = mutagen.File(path + '/' + media)
 
-            draw.text((0, 0), info['album'][0], font=self._font, fill=self._color_fg)
-            draw.text((0, self._size[0] - 48), info['title'][0], font=self._font, fill=self._color_fg)
-            draw.text((0, self._size[0] - 24), info['artist'][0], font=self._font, fill=self._color_fg)
+            draw.text((0, 0), info['album'][0],
+                      font=self._font, fill=self._color_fg)
+            draw.text(
+                (0,
+                 self._size[0] - 48),
+                info['title'][0],
+                font=self._font,
+                fill=self._color_fg)
+            draw.text(
+                (0,
+                 self._size[0] - 24),
+                info['artist'][0],
+                font=self._font,
+                fill=self._color_fg)
 
             self._ds.display(cover)
         except FileNotFoundError as fnf:
@@ -83,14 +95,17 @@ class View:
         draw = ImageDraw.Draw(img)
 
         for index, name in enumerate(self._menu[self._upper:self._lower]):
-            size_x, size_y = draw.textsize(name, self._font)
+            size_x, _ = draw.textsize(name, self._font)
             offset = index % 10
 
             if offset == self.cursor % 10:
-                draw.rectangle((0, 24 * offset, size_x, 24 * (offset + 1)), fill=self._color_fg)
-                draw.text((0, 24 * offset), name, font=self._font, fill=self._color_bg)
+                draw.rectangle((0, 24 * offset, size_x, 24 *
+                                (offset + 1)), fill=self._color_fg)
+                draw.text((0, 24 * offset), name,
+                          font=self._font, fill=self._color_bg)
             else:
-                draw.text((0, 24 * offset), name, font=self._font, fill=self._color_fg)
+                draw.text((0, 24 * offset), name,
+                          font=self._font, fill=self._color_fg)
 
         self._ds.display(img)
 

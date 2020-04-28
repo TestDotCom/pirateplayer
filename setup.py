@@ -12,9 +12,8 @@ setup(
         'numpy',
         'st7789',
         'pillow',
-        'vext',
-        'vext.gi',
         'mutagen',
+        'pygobject',
         'pylint',
         'autopep8'
     ],

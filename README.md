@@ -1,5 +1,5 @@
 # PiratePlayer
-Offline audio player for pirate-audio hats
+While there are other good software for audio playing, none of them works fully offline (mopidy) or doesn't natively support GPIO buttons (omxplayer).
 
 # HOW-TO use
 while browsing menu:
@@ -23,7 +23,10 @@ Pimoroni's pirate-audio hat, or hack together some DIY
 https://gstreamer.freedesktop.org/documentation/installing/on-linux.html
 https://www.hifiberry.com/docs/software/configuring-linux-3-18-x
 
-then make sure you have installed 'libatlas-base-dev'
+then make sure you have installed:
+    gobject-introspection
+    libgirepository1.0-dev
+    libcairo2-dev
 
 ## setup dev environment
 $ virtualenv venv  

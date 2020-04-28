@@ -1,8 +1,8 @@
+from gi.repository import Gst
 import logging
 
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import Gst
 
 
 class GStreamer():
@@ -23,7 +23,7 @@ class GStreamer():
         bus.add_signal_watch()
         bus.connect('message', self._on_message)
 
-    def _on_message(self, bus: Gst.Bus, message: Gst.Message):
+    def _on_message(self, message: Gst.Message):
         mtype = message.type
 
         if mtype == Gst.MessageType.EOS:
