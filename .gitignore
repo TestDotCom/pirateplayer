@@ -1,5 +1,6 @@
+/.idea
+/.vscode/
+/dist/
 /pirateplayer.egg-info/
 /venv/
 /__pycache__
-/.idea
-/.vscode/
