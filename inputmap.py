@@ -1,3 +1,4 @@
+from enum import Enum
 import logging
 
 from gpiozero import Button
@@ -9,7 +10,7 @@ _CALLBACKS = [None] * 2
 _BUTTONS = [None] * 4
 
 
-class PlayerState:
+class PlayerState(Enum):
     PLAYING = 0
     BROWSING = 1
 
