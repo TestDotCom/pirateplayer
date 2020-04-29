@@ -10,6 +10,10 @@ from gstreamer import GStreamer
 
 
 def main():
+    """Tie together each other piece of software.
+    Setup music folder and buttons pin number,
+    index music library and start gstreamer.
+    """
     _LOGGER = logging.getLogger(__name__)
     _LOGGER.setLevel(logging.DEBUG)
 
@@ -56,6 +60,7 @@ def main():
     set_state(
         PlayerState.BROWSING, [
             view.cursor_up, view.cursor_dwn, select, go_back])
+
     set_state(
         PlayerState.PLAYING, [
             stop_playing, gst.volume_dwn, gst.play, gst.volume_up])
@@ -71,5 +76,4 @@ def main():
         pause()
     except KeyboardInterrupt:
         _LOGGER.debug('CTRL-C signal')
-    finally:
         view.display_clear()

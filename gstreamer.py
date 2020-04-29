@@ -6,6 +6,7 @@ gi.require_version('Gst', '1.0')
 
 
 class GStreamer():
+    """Audio playback via Gstreamer objects."""
 
     def __init__(self):
         self._LOGGER = logging.getLogger(__name__)
@@ -41,10 +42,12 @@ class GStreamer():
             self._LOGGER.debug(debug)
 
     def run(self, uri):
+        """Set uri as audio source and start playback."""
         self._player.set_property('uri', uri)
         self._player.set_state(Gst.State.PLAYING)
 
     def play(self):
+        """Pause//resume playback."""
         _, state, _ = self._player.get_state(Gst.CLOCK_TIME_NONE)
 
         if state == Gst.State.PAUSED:
@@ -53,14 +56,17 @@ class GStreamer():
             self._player.set_state(Gst.State.PAUSED)
 
     def stop(self):
+        """Stop playback."""
         self._player.set_state(Gst.State.NULL)
 
     def volume_up(self):
+        """Increase Player volume (max 1.0)."""
         volume = self._player.get_property('volume')
         if volume < 1:
             self._player.set_property('volume', volume + 0.1)
 
     def volume_dwn(self):
+        """Decrease Player volume (min 0.0)."""
         volume = self._player.get_property('volume')
         if volume > 0:
             self._player.set_property('volume', volume - 0.1)

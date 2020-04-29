@@ -6,6 +6,13 @@ from ST7789 import ST7789
 
 
 class View:
+    """Draw elements on the screen.
+    Default display specs:
+        1.3" diagonal
+        240x240 resolution
+        ips screen
+        SPI driven
+    """
 
     def __init__(self):
         self._LOGGER = logging.getLogger(__name__)
@@ -20,8 +27,9 @@ class View:
                 'assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
         except IOError as ioe:
             self._LOGGER.debug(ioe)
+            self._font = ImageFont.load_default()
 
-        # display up to N files per screen
+        # default screen can display up to 10 rows
         self._upper = 0
         self._lower = 10
 
@@ -51,24 +59,37 @@ class View:
         self.display_menu()
 
     def display_clear(self):
+        """Draw a blank state."""
         self._ds.display(Image.new('RGB', self._size))
 
     def display_track(self, path, media):
+        """Draw album cover, then write album, title and artist.
+        Place its cover.png image inside track folder.
+        """
+
         try:
             cover = Image.open(path + '/' + 'cover.png')
             cover = cover.resize(self._size)
 
             draw = ImageDraw.Draw(cover)
+
+        except FileNotFoundError as fnf:
+            self._LOGGER.debug(fnf)
+            cover = Image.new('RGB', self._size)
+
+        try:
             info = mutagen.File(path + '/' + media)
 
             draw.text((0, 0), info['album'][0],
                       font=self._font, fill=self._color_fg)
+
             draw.text(
                 (0,
                  self._size[0] - 48),
                 info['title'][0],
                 font=self._font,
                 fill=self._color_fg)
+
             draw.text(
                 (0,
                  self._size[0] - 24),
@@ -76,13 +97,13 @@ class View:
                 font=self._font,
                 fill=self._color_fg)
 
-            self._ds.display(cover)
-        except FileNotFoundError as fnf:
-            self._LOGGER.debug(fnf)
         except mutagen.MutagenError as mge:
             self._LOGGER.debug(mge)
 
+        self._ds.display(cover)
+
     def update_menu(self, menu):
+        """Update internal menu list, reset current screen edges."""
         self._menu = menu
         self._menulen = len(menu)
         self.cursor = 0
@@ -91,10 +112,11 @@ class View:
         self._lower = 10
 
     def display_menu(self):
+        """Draw current menu list, row by row."""
         img = Image.new('RGB', self._size)
         draw = ImageDraw.Draw(img)
 
-        for index, name in enumerate(self._menu[self._upper:self._lower]):
+        for index, name in enumerate(self._menu[self._upper : self._lower]):
             size_x, _ = draw.textsize(name, self._font)
             offset = index % 10
 
@@ -110,6 +132,7 @@ class View:
         self._ds.display(img)
 
     def cursor_up(self):
+        """Draw selection cursor a row up, then check screen edges."""
         if self.cursor == 0:
             self.cursor = self._menulen
 
@@ -117,10 +140,12 @@ class View:
         self._update_edges()
 
     def cursor_dwn(self):
+        """Draw selection cursor a row down, then check screen edges."""
         self.cursor = (self.cursor + 1) % self._menulen
         self._update_edges()
 
     def display_logo(self):
+        """Draw PiratePlayer logo at startup."""
         try:
             logo = Image.open('assets/logo.png')
             logo = logo.resize(self._size)
