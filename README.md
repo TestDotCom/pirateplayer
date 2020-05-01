@@ -19,19 +19,21 @@ while playing:
 - Pimoroni's pirate-audio hat, or hack together some DIY
 - (optional) 3.7v LiPo + 5v regulator or something like a LiPo shim
 
-## install deps
+## Install deps
 Install requirements for [gstreamer](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html) and [hifiberry dac](https://www.hifiberry.com/docs/software/configuring-linux-3-18-x)
 
 then make sure you have installed:
 >gobject-introspection libgirepository1.0-dev libcairo2-dev
 
-## setup dev environment
+## Setup dev environment
+PiratePlayer runs with python >= 3.5
+
 >$ virtualenv venv  
 >$ . venv/bin/activate  
->$ pip install --editable .  
+>$ pip3 install --editable .  
 >$ pirateplayer  
 
-## install as systemd service
+## Install as systemd service (from dev environment)
 >$ mkdir -p ~/.config/systemd/user/  
 ```
 $ nano ~/.config/systemd/user/pirateplayer.service
@@ -46,5 +48,13 @@ ExecStart={pirateplayer_path}/venv/bin/python venv/bin/pirateplayer
 [Install]
 WantedBy=default.target
 ```
+
+>$ mkdir -p ~/.config/pirateplayer/  
+>$ cp {pirateplayer_path}/conf.ini ~/.config/pirateplayer/conf.ini  
+
 >$ systemctl --user enable pirateplayer.service  
 >$ systemctl --user start pirateplayer.service
+
+## Install as systemd service (from python module)
+install pirateplayer from release tab (wheel package)  
+launch install.sh
