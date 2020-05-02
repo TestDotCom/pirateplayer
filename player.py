@@ -1,12 +1,11 @@
-import configparser
 import logging
-import os
 from signal import pause
 
 from view import View
-from inputmap import PlayerState, set_buttons, set_state, map_buttons
+from utils.gstreamer import GStreamer
+import utils.inputmap as inputmap
+import utils.confparse as confparse
 from library import Library
-from gstreamer import GStreamer
 
 
 def main():
@@ -14,18 +13,16 @@ def main():
     Setup music folder and buttons pin number,
     index music library and start gstreamer.
     """
-    _LOGGER = logging.getLogger(__name__)
-    _LOGGER.setLevel(logging.DEBUG)
+    _logger = logging.getLogger(__name__)
+    _logger.setLevel(logging.DEBUG)
 
     view = View()
     view.display_logo()
 
-    config = configparser.ConfigParser()
-    config.read('conf.ini')
+    confparse.init()
+    inputmap.init()
 
-    root = os.path.expanduser(config['PLAYER'].get('root', '~/Music'))
-    library = Library(root)
-
+    library = Library()
     gst = GStreamer()
 
     def go_back():
@@ -37,38 +34,37 @@ def main():
 
     def select():
         media = library.get_next(view.cursor)
-        _LOGGER.debug('path: %s, file: %s', media.path, media.name)
+        _logger.debug('path: %s, file: %s', media.path, media.name)
 
         if media.isdir:
             menu = library.list_files()
 
             view.update_menu(menu)
             view.display_menu()
-        elif media.name.endswith(('m3u', 'm3u8')):
-            pass
         else:
-            view.display_track(media.path, media.name)
-            gst.run('file://' + media.path + '/' + media.name)
+            if media.name.endswith(('m3u', 'm3u8')):
+                pass
+            else:
+                view.display_track(media.path, media.name)
+                gst.run('file://' + media.path + '/' + media.name)
 
-            map_buttons(PlayerState.PLAYING)
+            inputmap.map_buttons(inputmap.PlayerState.PLAYING)
 
     def stop_playing():
         gst.stop()
         view.display_menu()
 
-        map_buttons(PlayerState.BROWSING)
+        inputmap.map_buttons(inputmap.PlayerState.BROWSING)
 
-    set_state(
-        PlayerState.BROWSING, [
+    inputmap.set_state(
+        inputmap.PlayerState.BROWSING, [
             view.cursor_up, view.cursor_dwn, select, go_back])
 
-    set_state(
-        PlayerState.PLAYING, [
+    inputmap.set_state(
+        inputmap.PlayerState.PLAYING, [
             stop_playing, gst.volume_dwn, gst.play, gst.volume_up])
 
-    buttons = list(config['BUTTON'].getint(btn) for btn in config['BUTTON'])
-    set_buttons(buttons)
-    map_buttons(PlayerState.BROWSING)
+    inputmap.map_buttons(inputmap.PlayerState.BROWSING)
 
     view.update_menu(library.list_files())
     view.display_menu()
@@ -76,5 +72,5 @@ def main():
     try:
         pause()
     except KeyboardInterrupt:
-        _LOGGER.debug('CTRL-C signal')
+        _logger.debug('CTRL-C signal')
         view.display_clear()

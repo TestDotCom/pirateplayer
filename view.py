@@ -15,8 +15,8 @@ class View:
     """
 
     def __init__(self):
-        self._LOGGER = logging.getLogger(__name__)
-        self._LOGGER.setLevel(logging.DEBUG)
+        self._logger = logging.getLogger(__name__)
+        self._logger.setLevel(logging.DEBUG)
 
         self._menu = list()
         self._menulen = 0
@@ -26,7 +26,7 @@ class View:
             self._font = ImageFont.truetype(
                 'assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
         except IOError as ioe:
-            self._LOGGER.debug(ioe)
+            self._logger.debug(ioe)
             self._font = ImageFont.load_default()
 
         # default screen can display up to 10 rows
@@ -71,36 +71,49 @@ class View:
             cover = Image.open(path + '/' + 'cover.png')
             cover = cover.resize(self._size)
 
-            draw = ImageDraw.Draw(cover)
-
         except FileNotFoundError as fnf:
-            self._LOGGER.debug(fnf)
+            self._logger.debug(fnf)
             cover = Image.new('RGB', self._size)
+
+        draw = ImageDraw.Draw(cover)
+
+        album = ''
+        title = media
+        artist = ''
 
         try:
             info = mutagen.File(path + '/' + media)
 
-            draw.text((0, 0), info['album'][0],
-                      font=self._font, fill=self._color_fg)
-
-            draw.text(
-                (0,
-                 self._size[0] - 48),
-                info['title'][0],
-                font=self._font,
-                fill=self._color_fg)
-
-            draw.text(
-                (0,
-                 self._size[0] - 24),
-                info['artist'][0],
-                font=self._font,
-                fill=self._color_fg)
+            if 'album' in info:
+                album = info['album'][0]
+            if 'title' in info:
+                title = info['title'][0]
+            if 'artist' in info:
+                artist = info['artist'][0]
 
         except mutagen.MutagenError as mge:
-            self._LOGGER.debug(mge)
+            self._logger.debug(mge)
 
-        self._ds.display(cover)
+        finally:
+            draw.text(
+                (0, 0),
+                album,
+                font=self._font,
+                fill=self._color_fg)
+
+            draw.text(
+                (0, self._size[0] - 48),
+                title,
+                font=self._font,
+                fill=self._color_fg)
+
+            draw.text(
+                (0, self._size[0] - 24),
+                artist,
+                font=self._font,
+                fill=self._color_fg)
+
+            self._ds.display(cover)
 
     def update_menu(self, menu):
         """Update internal menu list, reset current screen edges."""
@@ -152,4 +165,4 @@ class View:
 
             self._ds.display(logo)
         except FileNotFoundError as fnf:
-            self._LOGGER.debug(fnf)
+            self._logger.debug(fnf)

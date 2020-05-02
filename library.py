@@ -2,15 +2,19 @@ from collections import defaultdict, namedtuple
 import logging
 import os
 
+import utils.confparse as confparse
+
 Media = namedtuple('Media', ['path', 'name', 'isdir'])
 
 
 class Library:
     """Index current music selection."""
 
-    def __init__(self, root):
+    def __init__(self):
         self._LOGGER = logging.getLogger(__name__)
         self._LOGGER.setLevel(logging.DEBUG)
+
+        root = confparse.get_root()
 
         self._dirpath = list()
         self._dirpath.append(root + '/')
