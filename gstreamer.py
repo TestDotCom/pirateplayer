@@ -1,8 +1,8 @@
-from gi.repository import Gst
 import logging
 
 import gi
 gi.require_version('Gst', '1.0')
+from gi.repository import Gst
 
 
 class GStreamer():

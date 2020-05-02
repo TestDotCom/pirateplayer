@@ -17,14 +17,14 @@ def main():
     _LOGGER = logging.getLogger(__name__)
     _LOGGER.setLevel(logging.DEBUG)
 
+    view = View()
+    view.display_logo()
+
     config = configparser.ConfigParser()
     config.read('conf.ini')
 
     root = os.path.expanduser(config['PLAYER'].get('root', '~/Music'))
     library = Library(root)
-
-    view = View()
-    view.display_logo()
 
     gst = GStreamer()
 
@@ -37,15 +37,16 @@ def main():
 
     def select():
         media = library.get_next(view.cursor)
+        _LOGGER.debug('path: %s, file: %s', media.path, media.name)
 
-        if media is None:
+        if media.isdir:
             menu = library.list_files()
 
             view.update_menu(menu)
             view.display_menu()
+        elif media.name.endswith(('m3u', 'm3u8')):
+            pass
         else:
-            _LOGGER.debug('path: %s, file: %s', media.path, media.name)
-
             view.display_track(media.path, media.name)
             gst.run('file://' + media.path + '/' + media.name)
 

@@ -17,7 +17,6 @@ setup(
         'pillow',
         'mutagen',
         'pygobject',
-        'pylint',
         'autopep8'
     ],
     entry_points='''

@@ -2,7 +2,7 @@ from collections import defaultdict, namedtuple
 import logging
 import os
 
-Media = namedtuple('Media', ['path', 'name'])
+Media = namedtuple('Media', ['path', 'name', 'isdir'])
 
 
 class Library:
@@ -17,8 +17,7 @@ class Library:
 
         self._filetree = defaultdict()
 
-        # main supported file audio
-        ext = ('wav', 'flac', 'ogg', 'aac', 'mp3')
+        ext = ('wav', 'flac', 'ogg', 'aac', 'mp3', 'm3u', 'm3u8')
 
         for dirpath, dirnames, filenames in os.walk(root):
             dirpath += '/'
@@ -48,11 +47,10 @@ class Library:
             filepath,
             abspath)
 
-        media = None
+        isdir = not os.path.isfile(abspath)
+        media = Media(path=filepath, name=filename, isdir=isdir)
 
-        if os.path.isfile(abspath):
-            media = Media(path=filepath, name=filename)
-        else:
+        if isdir:
             self._dirpath.append(filename)
 
         return media
