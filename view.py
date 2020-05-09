@@ -1,12 +1,18 @@
+from pykka import ThreadingActor
 import logging
 
 import mutagen
 from PIL import Image, ImageFont, ImageDraw
 from ST7789 import ST7789
 
+_COLOR_BG = (0, 0, 0)
+_COLOR_FG = (255, 255, 255)
 
-class View:
-    """Draw elements on the screen.
+
+class View(ThreadingActor):
+    """MVC design pattern -> View actor.
+    Responsible for displaying audio tags and album cover.
+
     Default display specs:
         1.3" diagonal
         240x240 resolution
@@ -15,10 +21,11 @@ class View:
     """
 
     def __init__(self):
+        super().__init__()
+
         self._logger = logging.getLogger(__name__)
 
         self._menu = list()
-        self._menulen = 0
         self.cursor = 0
 
         try:
@@ -43,9 +50,6 @@ class View:
         )
 
         self._size = (self._ds.width, self._ds.height)
-
-        self._color_bg = (0, 0, 0)
-        self._color_fg = (255, 255, 255)
 
         self._display_logo()
 
@@ -112,26 +116,25 @@ class View:
                 (0, 0),
                 album,
                 font=self._font,
-                fill=self._color_fg)
+                fill=_COLOR_FG)
 
             draw.text(
                 (0, self._size[0] - 48),
                 title,
                 font=self._font,
-                fill=self._color_fg)
+                fill=_COLOR_FG)
 
             draw.text(
                 (0, self._size[0] - 24),
                 artist,
                 font=self._font,
-                fill=self._color_fg)
+                fill=_COLOR_FG)
 
             self._ds.display(cover)
 
     def update_menu(self, menu):
         """Update internal menu list, reset current screen edges."""
         self._menu = menu
-        self._menulen = len(menu)
         self.cursor = 0
 
         self._upper = 0
@@ -148,24 +151,24 @@ class View:
 
             if offset == self.cursor % 10:
                 draw.rectangle((0, 24 * offset, size_x, 24 *
-                                (offset + 1)), fill=self._color_fg)
+                                (offset + 1)), fill=_COLOR_FG)
                 draw.text((0, 24 * offset), name,
-                          font=self._font, fill=self._color_bg)
+                          font=self._font, fill=_COLOR_BG)
             else:
                 draw.text((0, 24 * offset), name,
-                          font=self._font, fill=self._color_fg)
+                          font=self._font, fill=_COLOR_FG)
 
         self._ds.display(img)
 
     def cursor_up(self):
         """Draw selection cursor a row up, then check screen edges."""
         if self.cursor == 0:
-            self.cursor = self._menulen
+            self.cursor = len(self._menu)
 
         self.cursor -= 1
         self._update_edges()
 
     def cursor_dwn(self):
         """Draw selection cursor a row down, then check screen edges."""
-        self.cursor = (self.cursor + 1) % self._menulen
+        self.cursor = (self.cursor + 1) % len(self._menu)
         self._update_edges()

@@ -1,16 +1,21 @@
 from collections import defaultdict, namedtuple
 import logging
 import os
+from pykka import ThreadingActor
 
 import utils.confparse as confparse
 
 Media = namedtuple('Media', ['path', 'name', 'isdir'])
 
 
-class Library:
-    """Index current music selection."""
+class Library(ThreadingActor):
+    """MVC design pattern -> Model actor.
+    Responsible for indexing every audio file supported.
+    """
 
     def __init__(self):
+        super().__init__()
+
         self._logger = logging.getLogger(__name__)
         root = confparse.get_root()
 

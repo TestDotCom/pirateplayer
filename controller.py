@@ -5,6 +5,9 @@ import utils.inputmap as inputmap
 
 
 class Controller(ThreadingActor):
+    """MVC design pattern -> Control actor.
+    Responsible for coordinating each other actor.
+    """
 
     def __init__(self, view, model, player):
         super().__init__()
@@ -35,15 +38,16 @@ class Controller(ThreadingActor):
 
         inputmap.map_buttons(inputmap.PlayerState.BROWSING)
 
-        self._view.update_menu(self._model.list_files())
+        menu = self._model.list_files().get()
+        self._view.update_menu(menu)
         self._view.display_menu()
 
     def _select(self):
-        media = self._model.get_next(self._view.cursor)
+        media = self._model.get_next(self._view.cursor.get())
         self._logger.debug('path: %s, file: %s', media.path, media.name)
 
         if media.isdir:
-            menu = self._model.list_files()
+            menu = self._model.list_files().get()
 
             self._view.update_menu(menu)
             self._view.display_menu()
@@ -57,7 +61,7 @@ class Controller(ThreadingActor):
 
     def _go_back(self):
         self._model.get_previous()
-        menu = self._model.list_files()
+        menu = self._model.list_files().get()
 
         self._view.update_menu(menu)
         self._view.display_menu()
