@@ -11,8 +11,8 @@ class Library:
     """Index current music selection."""
 
     def __init__(self):
-        self._LOGGER = logging.getLogger(__name__)
-        self._LOGGER.setLevel(logging.DEBUG)
+        self._logger = logging.getLogger(__name__)
+        self._logger.setLevel(logging.DEBUG)
 
         root = confparse.get_root()
 
@@ -32,20 +32,21 @@ class Library:
             self._filetree[dirpath] = dirnames + filenames
 
     def list_files(self):
-        """Retrieve {current dir} available files"""
+        """Retrieve {current dir} available files.
+        Current dir is given by concatenating each element of _dirpath.
+        """
         abspath = ''.join(self._dirpath)
         return self._filetree[abspath]
 
     def get_next(self, index):
-        """Retrive actual file selection.
-        If its a dir, move inside;
-        else returns a 'Media' namedtuple.
+        """Retrive actual file selection, then
+        if its a dir, move inside.
         """
         filename = self.list_files()[index]
         filepath = ''.join(self._dirpath)
         abspath = filepath + filename
 
-        self._LOGGER.debug(
+        self._logger.debug(
             'filename = %s, filepath = %s, abspath = %s',
             filename,
             filepath,

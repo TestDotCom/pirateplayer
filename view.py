@@ -48,6 +48,17 @@ class View:
         self._color_bg = (0, 0, 0)
         self._color_fg = (255, 255, 255)
 
+        self._display_logo()
+
+    def _display_logo(self):
+        try:
+            logo = Image.open('assets/logo.png')
+            logo = logo.resize(self._size)
+
+            self._ds.display(logo)
+        except FileNotFoundError as fnf:
+            self._logger.debug(fnf)
+
     def _update_edges(self):
         if self.cursor < self._upper:
             self._lower = self._upper
@@ -77,19 +88,23 @@ class View:
 
         draw = ImageDraw.Draw(cover)
 
-        album = ''
-        title = media
-        artist = ''
-
         try:
             info = mutagen.File(path + '/' + media)
 
             if 'album' in info:
                 album = info['album'][0]
+            else:
+                album = ''
+
             if 'title' in info:
                 title = info['title'][0]
+            else:
+                title = media
+
             if 'artist' in info:
                 artist = info['artist'][0]
+            else:
+                artist = ''
 
         except mutagen.MutagenError as mge:
             self._logger.debug(mge)
@@ -156,13 +171,3 @@ class View:
         """Draw selection cursor a row down, then check screen edges."""
         self.cursor = (self.cursor + 1) % self._menulen
         self._update_edges()
-
-    def display_logo(self):
-        """Draw PiratePlayer logo at startup."""
-        try:
-            logo = Image.open('assets/logo.png')
-            logo = logo.resize(self._size)
-
-            self._ds.display(logo)
-        except FileNotFoundError as fnf:
-            self._logger.debug(fnf)

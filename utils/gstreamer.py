@@ -9,8 +9,10 @@ class GStreamer():
     """Audio playback via Gstreamer objects."""
 
     def __init__(self):
-        self._LOGGER = logging.getLogger(__name__)
-        self._LOGGER.setLevel(logging.DEBUG)
+        self._logger = logging.getLogger(__name__)
+        self._logger.setLevel(logging.DEBUG)
+
+        self.playlist = list()
 
         Gst.init(None)
 
@@ -28,21 +30,24 @@ class GStreamer():
         mtype = message.type
 
         if mtype == Gst.MessageType.EOS:
-            self._LOGGER.debug("End of stream")
+            self._logger.debug("End of stream")
             self.stop()
+
         elif mtype == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
-            self._LOGGER.error(err)
-            self._LOGGER.debug(debug)
+            self._logger.error(err)
+            self._logger.debug(debug)
 
             self.stop()
         elif mtype == Gst.MessageType.WARNING:
             err, debug = message.parse_warning()
-            self._LOGGER.error(err)
-            self._LOGGER.debug(debug)
+            self._logger.error(err)
+            self._logger.debug(debug)
 
-    def run(self, uri):
+    def run(self):
         """Set uri as audio source and start playback."""
+        uri = self.playlist.pop()
+
         self._player.set_property('uri', uri)
         self._player.set_state(Gst.State.PLAYING)
 

@@ -9,15 +9,13 @@ from library import Library
 
 
 def main():
-    """Tie together each other piece of software.
-    Setup music folder and buttons pin number,
-    index music library and start gstreamer.
+    """PiratePlayer is built following the
+    MVC pattern. This script acts as Controller.
     """
     _logger = logging.getLogger(__name__)
     _logger.setLevel(logging.DEBUG)
 
     view = View()
-    view.display_logo()
 
     confparse.init()
     inputmap.init()
@@ -42,11 +40,20 @@ def main():
             view.update_menu(menu)
             view.display_menu()
         else:
+            mediapath = 'file://' + media.path + '/' + media.name
+
             if media.name.endswith(('m3u', 'm3u8')):
-                pass
+                with open(mediapath, 'r') as p:
+                    path = 'file://' + media.path + '/'
+                    gst.playlist.append(path + track for track in p.readlines())
+
+                track = gst.playlist[0]
             else:
-                view.display_track(media.path, media.name)
-                gst.run('file://' + media.path + '/' + media.name)
+                track = media.name
+                gst.playlist.append(mediapath)
+
+            view.display_track(media.path, track)
+            gst.run()
 
             inputmap.map_buttons(inputmap.PlayerState.PLAYING)
 
@@ -73,4 +80,5 @@ def main():
         pause()
     except KeyboardInterrupt:
         _logger.debug('CTRL-C signal')
+    finally:
         view.display_clear()
