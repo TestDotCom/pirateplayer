@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='pirateplayer',
-    version='0.1.1',
+    version='0.2.1',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -17,11 +17,12 @@ setup(
         'pillow',
         'mutagen',
         'pygobject',
+        'pykka',
         'autopep8'
     ],
     entry_points='''
             [console_scripts]
-            pirateplayer=player:main
+            pirateplayer=main:main
         ''',
     description='Play offline music on PirateAudio',
     long_description=long_description,

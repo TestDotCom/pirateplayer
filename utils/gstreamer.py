@@ -10,9 +10,6 @@ class GStreamer():
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        self._logger.setLevel(logging.DEBUG)
-
-        self.playlist = list()
 
         Gst.init(None)
 
@@ -22,32 +19,8 @@ class GStreamer():
 
         self._player.set_property('volume', 0.1)
 
-        bus = self._player.get_bus()
-        bus.add_signal_watch()
-        bus.connect('message', self._on_message)
-
-    def _on_message(self, message: Gst.Message):
-        mtype = message.type
-
-        if mtype == Gst.MessageType.EOS:
-            self._logger.debug("End of stream")
-            self.stop()
-
-        elif mtype == Gst.MessageType.ERROR:
-            err, debug = message.parse_error()
-            self._logger.error(err)
-            self._logger.debug(debug)
-
-            self.stop()
-        elif mtype == Gst.MessageType.WARNING:
-            err, debug = message.parse_warning()
-            self._logger.error(err)
-            self._logger.debug(debug)
-
-    def run(self):
+    def run(self, uri):
         """Set uri as audio source and start playback."""
-        uri = self.playlist.pop()
-
         self._player.set_property('uri', uri)
         self._player.set_state(Gst.State.PLAYING)
 

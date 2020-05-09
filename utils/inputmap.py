@@ -17,8 +17,6 @@ class PlayerState(IntEnum):
 
 
 def init():
-    _LOGGER.setLevel(logging.DEBUG)
-
     for index, pin in enumerate(confparse.get_pins()):
         _BUTTONS[index] = Button(pin)
 

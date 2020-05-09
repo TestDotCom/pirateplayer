@@ -16,7 +16,6 @@ class View:
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        self._logger.setLevel(logging.DEBUG)
 
         self._menu = list()
         self._menulen = 0
@@ -77,9 +76,8 @@ class View:
         """Draw album cover, then write album, title and artist.
         Place its cover.png image inside track folder.
         """
-
         try:
-            cover = Image.open(path + '/' + 'cover.png')
+            cover = Image.open(path + 'cover.png')
             cover = cover.resize(self._size)
 
         except FileNotFoundError as fnf:

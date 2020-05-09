@@ -3,12 +3,10 @@ import logging
 import os
 
 _LOGGER = logging.getLogger(__name__)
-
 _CONF = configparser.ConfigParser()
 
 
 def init():
-    _LOGGER.setLevel(logging.DEBUG)
     _CONF.read(os.path.expanduser('~/.config/pirateplayer/conf.ini'))
 
 

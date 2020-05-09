@@ -12,8 +12,6 @@ class Library:
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        self._logger.setLevel(logging.DEBUG)
-
         root = confparse.get_root()
 
         self._dirpath = list()
@@ -21,13 +19,12 @@ class Library:
 
         self._filetree = defaultdict()
 
-        ext = ('wav', 'flac', 'ogg', 'aac', 'mp3', 'm3u', 'm3u8')
+        ext = ('wav', 'flac', 'ogg', 'aac', 'mp3')
 
         for dirpath, dirnames, filenames in os.walk(root):
             dirpath += '/'
             dirnames = list(dn + '/' for dn in sorted(dirnames))
-            filenames = list(fn for fn in sorted(
-                filenames) if fn.endswith(ext))
+            filenames = list(fn for fn in sorted(filenames) if fn.endswith(ext))
 
             self._filetree[dirpath] = dirnames + filenames
 
@@ -45,12 +42,6 @@ class Library:
         filename = self.list_files()[index]
         filepath = ''.join(self._dirpath)
         abspath = filepath + filename
-
-        self._logger.debug(
-            'filename = %s, filepath = %s, abspath = %s',
-            filename,
-            filepath,
-            abspath)
 
         isdir = not os.path.isfile(abspath)
         media = Media(path=filepath, name=filename, isdir=isdir)
