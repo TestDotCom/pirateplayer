@@ -1,7 +1,7 @@
 from pykka import ThreadingActor
 import logging
 
-import utils.inputmap as inputmap
+import pirateplayer.utils.inputmap as inputmap
 
 
 class Controller(ThreadingActor):
@@ -38,16 +38,19 @@ class Controller(ThreadingActor):
 
         inputmap.map_buttons(inputmap.PlayerState.BROWSING)
 
-        menu = self._model.list_files().get()
+        menu = self._model.list_files()
         self._view.update_menu(menu)
         self._view.display_menu()
 
+    def on_receive(self, message):
+        self._logger.debug('received message: %s', message)
+
     def _select(self):
-        media = self._model.get_next(self._view.cursor.get())
+        media = self._model.get_next(self._view.cursor)
         self._logger.debug('path: %s, file: %s', media.path, media.name)
 
         if media.isdir:
-            menu = self._model.list_files().get()
+            menu = self._model.list_files()
 
             self._view.update_menu(menu)
             self._view.display_menu()
@@ -61,7 +64,7 @@ class Controller(ThreadingActor):
 
     def _go_back(self):
         self._model.get_previous()
-        menu = self._model.list_files().get()
+        menu = self._model.list_files()
 
         self._view.update_menu(menu)
         self._view.display_menu()

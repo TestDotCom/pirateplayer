@@ -4,6 +4,8 @@ LOCAL_CONFIG=~/.config
 SERVICE_DIR=$LOCAL_CONFIG/systemd/user/
 CONF_DIR=$LOCAL_CONFIG/pirateplayer/
 
+printf "remember to install pirateplayer from pip as user (if you haven't done it yet)\n"
+
 if [ ! -d "$SERVICE_DIR" ]; then
     mkdir -p "$SERVICE_DIR"
 fi
@@ -13,7 +15,7 @@ if [ ! -d "$CONF_DIR" ]; then
 fi
 
 if [ "$CONF_DIR/conf.ini" ]; then
-    echo "resetting conf.ini to default values"
+    printf "resetting conf.ini to default values\n"
 fi
 
 cat <<EOF > "$CONF_DIR/conf.ini"
@@ -30,7 +32,7 @@ y = 20
 EOF
 
 if [ "$SERVICE_DIR/pirateplayer.service" ]; then
-    echo "resetting systemd service to default values"
+    printf "resetting systemd service to default values\n"
 fi
 
 cat <<EOF > "$SERVICE_DIR/pirateplayer.service"
@@ -46,5 +48,5 @@ WantedBy=default.target
 
 EOF
 
-echo "to launch pirateplayer at startup do:\nsystemctl --user enable pirateplayer.service"
-echo "to launch pirateplayer right now do:\nsystemctl --user start pirateplayer.service"
+printf "to launch pirateplayer at startup do:\n\tsystemctl --user enable pirateplayer.service\n"
+printf "to launch pirateplayer right now do:\n\tsystemctl --user start pirateplayer.service\n"

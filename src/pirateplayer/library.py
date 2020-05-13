@@ -1,21 +1,19 @@
+# pylint: disable=missing-module-docstring
 from collections import defaultdict, namedtuple
 import logging
 import os
-from pykka import ThreadingActor
 
-import utils.confparse as confparse
+import pirateplayer.utils.confparse as confparse
 
 Media = namedtuple('Media', ['path', 'name', 'isdir'])
 
 
-class Library(ThreadingActor):
+class Library():
     """MVC design pattern -> Model actor.
     Responsible for indexing every audio file supported.
     """
 
     def __init__(self):
-        super().__init__()
-
         self._logger = logging.getLogger(__name__)
         root = confparse.get_root()
 

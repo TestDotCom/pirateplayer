@@ -1,8 +1,9 @@
+# pylint: disable=missing-module-docstring
 from enum import IntEnum
 import logging
 
 from gpiozero import Button
-import utils.confparse as confparse
+import pirateplayer.utils.confparse as confparse
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,16 +18,17 @@ class PlayerState(IntEnum):
 
 
 def init():
+    """Setup GPIO buttons."""
     for index, pin in enumerate(confparse.get_pins()):
         _BUTTONS[index] = Button(pin)
 
 
 def set_state(state, handlers):
-    """Change Player current state."""
+    """Switch Player current state."""
     _CALLBACKS[state] = handlers
 
 
 def map_buttons(state):
-    """Map this {state} Buttons to function callbacks."""
+    """Map current-state Buttons to function callbacks."""
     for button, handler in zip(_BUTTONS, _CALLBACKS[state]):
         button.when_pressed = handler

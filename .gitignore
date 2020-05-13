@@ -2,6 +2,7 @@
 /.vscode/
 /build/
 /dist/
-/pirateplayer.egg-info/
+/src/pirateplayer.egg-info/
+/src/pirateplayer/__pycache__
 /venv/
 /__pycache__

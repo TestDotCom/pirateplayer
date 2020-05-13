@@ -1,4 +1,4 @@
-from pykka import ThreadingActor
+# pylint: disable=missing-module-docstring
 import logging
 
 import mutagen
@@ -9,7 +9,8 @@ _COLOR_BG = (0, 0, 0)
 _COLOR_FG = (255, 255, 255)
 
 
-class View(ThreadingActor):
+# pylint: disable=too-many-instance-attributes
+class View():
     """MVC design pattern -> View actor.
     Responsible for displaying audio tags and album cover.
 
@@ -21,8 +22,6 @@ class View(ThreadingActor):
     """
 
     def __init__(self):
-        super().__init__()
-
         self._logger = logging.getLogger(__name__)
 
         self._menu = list()
@@ -30,7 +29,7 @@ class View(ThreadingActor):
 
         try:
             self._font = ImageFont.truetype(
-                'assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
+                'src/assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
         except IOError as ioe:
             self._logger.debug(ioe)
             self._font = ImageFont.load_default()
@@ -55,7 +54,7 @@ class View(ThreadingActor):
 
     def _display_logo(self):
         try:
-            logo = Image.open('assets/logo.png')
+            logo = Image.open('src/assets/logo.png')
             logo = logo.resize(self._size)
 
             self._ds.display(logo)
