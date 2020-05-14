@@ -22,12 +22,12 @@ class Library():
 
         self._filetree = defaultdict()
 
-        ext = ('wav', 'flac', 'ogg', 'aac', 'mp3')
+        ext = ('wav', 'flac', 'ogg', 'aac', 'mp3', 'm3u', 'm3u8')
 
         for dirpath, dirnames, filenames in os.walk(root):
             dirpath += '/'
-            dirnames = list(dn + '/' for dn in sorted(dirnames))
-            filenames = list(fn for fn in sorted(filenames) if fn.endswith(ext))
+            dirnames = sorted(dn + '/' for dn in dirnames)
+            filenames = sorted(fn for fn in filenames if fn.endswith(ext))
 
             self._filetree[dirpath] = dirnames + filenames
 
@@ -47,10 +47,17 @@ class Library():
         abspath = filepath + filename
 
         isdir = not os.path.isfile(abspath)
-        media = Media(path=filepath, name=filename, isdir=isdir)
 
         if isdir:
             self._dirpath.append(filename)
+
+        if filename.endswith(('m3u', 'm3u8')):
+            with open(abspath, 'r') as p:
+                playlist = sorted((track.strip() for track in p.readlines()), reverse=True)
+        else:
+            playlist = [filename]
+
+        media = Media(path=filepath, name=playlist, isdir=isdir)
 
         return media
 

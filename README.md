@@ -1,5 +1,5 @@
 # PiratePlayer
-While there are other good software for audio playing, none of them works fully offline (mopidy) or doesn't natively support GPIO buttons (omxplayer).
+While there are other good software for audio playing, none of them works fully offline (mopidy) or doesn't natively support GPIO buttons (omxplayer): PiratePlayer to the rescue!
 
 # HOW-TO use
 while browsing menu:
@@ -56,5 +56,5 @@ WantedBy=default.target
 >$ systemctl --user start pirateplayer.service
 
 ## Install as systemd service (from python module)
-install pirateplayer from release tab (wheel package)  
+install pirateplayer from pip (coming soon)   
 launch install.sh

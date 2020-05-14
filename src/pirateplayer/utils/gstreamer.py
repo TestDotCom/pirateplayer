@@ -16,7 +16,11 @@ class GStreamer():
         self._logger = logging.getLogger(__name__)
 
         Gst.init(None)
+
         self._mainloop = GLib.MainLoop.new(None, False)
+        mainloop_t = Thread(target=self._mainloop.run)
+        mainloop_t.daemon = True
+        mainloop_t.start()
 
         sink = Gst.ElementFactory.make('alsasink', 'sink')  # pirate-audio hat
         self._player = Gst.ElementFactory.make('playbin', 'player')
@@ -33,12 +37,10 @@ class GStreamer():
         mtype = message.type
 
         if mtype == Gst.MessageType.EOS:
-            self._logger.debug('End of stream')
+            self._player.set_state(Gst.State.NULL)
 
-            controller_ref = ActorRegistry.get_by_class_name('Controller')
+            controller_ref = ActorRegistry.get_by_class_name('Controller')[0]
             controller_ref.tell('eos')
-
-            self.stop()
 
         elif mtype == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
@@ -52,14 +54,10 @@ class GStreamer():
             self._logger.error(err)
             self._logger.debug(debug)
 
-    def run(self, uri):
+    def run(self, track):
         """Set uri as audio source and start playback."""
-        self._player.set_property('uri', uri)
+        self._player.set_property('uri', 'file://' + track)
         self._player.set_state(Gst.State.PLAYING)
-
-        mainloop_t = Thread(target=self._mainloop.run)
-        mainloop_t.daemon = True
-        mainloop_t.start()
 
     def play(self):
         """Pause//resume playback."""

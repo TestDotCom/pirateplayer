@@ -1,5 +1,6 @@
-from pykka import ThreadingActor
+# pylint: disable=missing-module-docstring
 import logging
+from pykka import ThreadingActor
 
 import pirateplayer.utils.inputmap as inputmap
 
@@ -17,6 +18,8 @@ class Controller(ThreadingActor):
         self._view = view
         self._model = model
         self._player = player
+
+        self._media = None
 
         inputmap.set_state(
             inputmap.PlayerState.BROWSING,
@@ -45,20 +48,28 @@ class Controller(ThreadingActor):
     def on_receive(self, message):
         self._logger.debug('received message: %s', message)
 
-    def _select(self):
-        media = self._model.get_next(self._view.cursor)
-        self._logger.debug('path: %s, file: %s', media.path, media.name)
+        if self._media:
+            self._playback()
+        else:
+            self._player.stop()
 
-        if media.isdir:
+    def _playback(self):
+        track = self._media.name.pop()
+
+        self._view.display_track(self._media.path, track)
+        self._player.run(self._media.path + track)
+
+    def _select(self):
+        self._media = self._model.get_next(self._view.cursor)
+        self._logger.debug('path: %s, file: %s', self._media.path, self._media.name)
+
+        if self._media.isdir:
             menu = self._model.list_files()
 
             self._view.update_menu(menu)
             self._view.display_menu()
         else:
-            fileuri = 'file://' + media.path + '/' + media.name
-
-            self._view.display_track(media.path, media.name)
-            self._player.run(fileuri)
+            self._playback()
 
             inputmap.map_buttons(inputmap.PlayerState.PLAYING)
 
