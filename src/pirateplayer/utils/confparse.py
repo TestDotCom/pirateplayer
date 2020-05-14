@@ -20,5 +20,5 @@ def get_root():
 
 
 def get_pins():
-    """Return user-defined buttons pin."""
+    """Return user-defined buttons pin (BCM numbering)."""
     return list(_CONF['BUTTON'].getint(btn) for btn in _CONF['BUTTON'])

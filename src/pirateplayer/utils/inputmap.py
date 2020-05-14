@@ -24,7 +24,7 @@ def init():
 
 
 def set_state(state, handlers):
-    """Switch Player current state."""
+    """Switch Player current-state."""
     _CALLBACKS[state] = handlers
 
 

@@ -11,7 +11,7 @@ _COLOR_FG = (255, 255, 255)
 
 # pylint: disable=too-many-instance-attributes
 class View():
-    """MVC design pattern -> View actor.
+    """MVC design pattern -> View object.
     Responsible for displaying audio tags and album cover.
 
     Default display specs:
@@ -144,7 +144,7 @@ class View():
         img = Image.new('RGB', self._size)
         draw = ImageDraw.Draw(img)
 
-        for index, name in enumerate(self._menu[self._upper : self._lower]):
+        for index, name in enumerate(self._menu[self._upper: self._lower]):
             size_x, _ = draw.textsize(name, self._font)
             offset = index % 10
 

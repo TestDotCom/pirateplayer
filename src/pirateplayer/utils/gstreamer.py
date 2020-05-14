@@ -10,7 +10,9 @@ from gi.repository import Gst, GLib
 
 
 class GStreamer():
-    """Audio playback via Gstreamer objects."""
+    """Audio playback via Gstreamer objects.
+    Internally it executes Glib.MainLoop inside a Thread.
+    """
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
@@ -28,6 +30,7 @@ class GStreamer():
 
         self._player.set_property('volume', 0.1)
 
+        # Needs Glib.MainLoop to work
         bus = self._player.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self._on_message)

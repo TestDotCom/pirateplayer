@@ -6,8 +6,8 @@ import pirateplayer.utils.inputmap as inputmap
 
 
 class Controller(ThreadingActor):
-    """MVC design pattern -> Control actor.
-    Responsible for coordinating each other actor.
+    """MVC design pattern -> Control object.
+    Responsible for coordinating each other object.
     """
 
     def __init__(self, view, model, player):
@@ -61,7 +61,11 @@ class Controller(ThreadingActor):
 
     def _select(self):
         self._media = self._model.get_next(self._view.cursor)
-        self._logger.debug('path: %s, file: %s', self._media.path, self._media.name)
+
+        self._logger.debug(
+            'path: %s, file: %s',
+            self._media.path,
+            self._media.name)
 
         if self._media.isdir:
             menu = self._model.list_files()

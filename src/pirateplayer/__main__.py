@@ -8,6 +8,7 @@ import pirateplayer.utils.confparse as confparse
 from pirateplayer.library import Library
 from pirateplayer.controller import Controller
 
+
 def main():
     """PiratePlayer entrypoint: initialize components."""
     logging.basicConfig(level=logging.DEBUG)
