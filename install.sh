@@ -41,7 +41,7 @@ cat <<EOF > "$SERVICE_DIR/pirateplayer.service"
 Description=PiratePlayer Service
 
 [Service]
-ExecStart=python3 -m pirateplayer
+ExecStart=/usr/bin/pirateplayer
 
 [Install]
 WantedBy=default.target

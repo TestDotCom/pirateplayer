@@ -31,30 +31,8 @@ PiratePlayer runs with python >= 3.5
 >$ virtualenv venv  
 >$ . venv/bin/activate  
 >$ pip3 install --editable .  
->$ pirateplayer  
-
-## Install as systemd service (from dev environment)
->$ mkdir -p ~/.config/systemd/user/  
-```
-$ nano ~/.config/systemd/user/pirateplayer.service
-
-[Unit]
-Description=PiratePlayer Service
-
-[Service]
-WorkingDirectory={pirateplayer_path}/pirateplayer
-ExecStart={pirateplayer_path}/venv/bin/python venv/bin/pirateplayer
-
-[Install]
-WantedBy=default.target
-```
-
->$ mkdir -p ~/.config/pirateplayer/  
->$ cp {pirateplayer_path}/conf.ini ~/.config/pirateplayer/conf.ini  
-
->$ systemctl --user enable pirateplayer.service  
->$ systemctl --user start pirateplayer.service
+>$ pirateplayer
 
 ## Install as systemd service (from python module)
-install pirateplayer from pip (coming soon)   
+install pirateplayer from pip  
 launch install.sh

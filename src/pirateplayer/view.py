@@ -1,5 +1,6 @@
 # pylint: disable=missing-module-docstring
 import logging
+from pkg_resources import resource_filename
 
 import mutagen
 from PIL import Image, ImageFont, ImageDraw
@@ -28,8 +29,11 @@ class View():
         self.cursor = 0
 
         try:
-            self._font = ImageFont.truetype(
-                'src/assets/NotoSansMono-ExtraCondensedSemiBold.ttf', 20)
+            fontpath = resource_filename(
+                __name__,
+                'assets/NotoSansMono-ExtraCondensedSemiBold.ttf')
+
+            self._font = ImageFont.truetype(fontpath, 20)
         except IOError as ioe:
             self._logger.debug(ioe)
             self._font = ImageFont.load_default()
@@ -54,7 +58,9 @@ class View():
 
     def _display_logo(self):
         try:
-            logo = Image.open('src/assets/logo.png')
+            logopath = resource_filename(__name__, 'assets/logo.png')
+
+            logo = Image.open(logopath)
             logo = logo.resize(self._size)
 
             self._ds.display(logo)
