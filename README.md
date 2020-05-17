@@ -1,6 +1,8 @@
 # PiratePlayer
 While there are other good software for audio playing, none of them works fully offline (mopidy) or doesn't natively support GPIO buttons (omxplayer): PiratePlayer to the rescue!
 
+![PiratePlayer demo](src/pirateplayer/assets/demo.png)
+
 # HOW-TO use
 while browsing menu:
 >press A to scroll up  
