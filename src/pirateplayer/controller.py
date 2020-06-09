@@ -48,13 +48,13 @@ class Controller(ThreadingActor):
     def on_receive(self, message):
         self._logger.debug('received message: %s', message)
 
-        if self._media.name:
+        if self._media.names:
             self._playback()
         else:
             self._player.stop()
 
     def _playback(self):
-        track = self._media.name.pop()
+        track = self._media.names.pop()
 
         self._view.display_track(self._media.path, track)
         self._player.run(self._media.path + track)
@@ -65,7 +65,7 @@ class Controller(ThreadingActor):
         self._logger.debug(
             'path: %s, file: %s',
             self._media.path,
-            self._media.name)
+            self._media.names[0])
 
         if self._media.isdir:
             menu = self._model.list_files()
