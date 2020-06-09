@@ -27,6 +27,8 @@ Install requirements for [gstreamer](https://gstreamer.freedesktop.org/documenta
 then make sure you have installed:
 >gobject-introspection libgirepository1.0-dev libcairo2-dev
 
+and enable GPIO SPI - check [RPiconfig](https://elinux.org/RPiconfig) if not sure how
+
 ## Setup dev environment
 PiratePlayer runs with python >= 3.5
 

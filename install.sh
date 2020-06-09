@@ -4,6 +4,7 @@ LOCAL_CONFIG=~/.config
 SERVICE_DIR=$LOCAL_CONFIG/systemd/user/
 CONF_DIR=$LOCAL_CONFIG/pirateplayer/
 
+printf "check README for necessary system dependencies"
 printf "remember to install pirateplayer from pip as user (if you haven't done it yet)\n"
 
 if [ ! -d "$SERVICE_DIR" ]; then

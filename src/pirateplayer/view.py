@@ -85,6 +85,11 @@ class View():
         """Draw album cover, then write album, title and artist.
         Place its cover.png image inside track folder.
         """
+        cover = None
+        album = ''
+        title = media
+        artist = ''
+
         try:
             cover = Image.open(path + 'cover.png')
             cover = cover.resize(self._size)
@@ -93,25 +98,20 @@ class View():
             self._logger.debug(fnf)
             cover = Image.new('RGB', self._size)
 
-        draw = ImageDraw.Draw(cover)
+        finally:
+            draw = ImageDraw.Draw(cover)
 
         try:
             info = mutagen.File(path + '/' + media)
 
             if 'album' in info:
                 album = info['album'][0]
-            else:
-                album = ''
 
             if 'title' in info:
                 title = info['title'][0]
-            else:
-                title = media
 
             if 'artist' in info:
                 artist = info['artist'][0]
-            else:
-                artist = ''
 
         except mutagen.MutagenError as mge:
             self._logger.debug(mge)

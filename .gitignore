@@ -3,6 +3,5 @@
 /build/
 /dist/
 /src/pirateplayer.egg-info/
-/src/pirateplayer/__pycache__
+/**/__pycache__
 /venv/
-/__pycache__

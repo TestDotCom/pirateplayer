@@ -48,7 +48,7 @@ class Controller(ThreadingActor):
     def on_receive(self, message):
         self._logger.debug('received message: %s', message)
 
-        if self._media:
+        if self._media.name:
             self._playback()
         else:
             self._player.stop()
@@ -60,7 +60,7 @@ class Controller(ThreadingActor):
         self._player.run(self._media.path + track)
 
     def _select(self):
-        self._media = self._model.get_next(self._view.cursor)
+        self._media = self._model.retrieve_file(self._view.cursor)
 
         self._logger.debug(
             'path: %s, file: %s',
@@ -78,7 +78,7 @@ class Controller(ThreadingActor):
             inputmap.map_buttons(inputmap.PlayerState.PLAYING)
 
     def _go_back(self):
-        self._model.get_previous()
+        self._model.browse_up()
         menu = self._model.list_files()
 
         self._view.update_menu(menu)
