@@ -3,7 +3,6 @@ from enum import IntEnum
 import logging
 
 from gpiozero import Button
-import pirateplayer.utils.confparse as confparse
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,18 +16,18 @@ class PlayerState(IntEnum):
     BROWSING = 1
 
 
-def init():
+def init(pins: list):
     """Setup GPIO buttons."""
-    for index, pin in enumerate(confparse.get_pins()):
+    for index, pin in enumerate(pins):
         _BUTTONS[index] = Button(pin)
 
 
-def set_state(state, handlers):
-    """Switch Player current-state."""
+def set_state(state: PlayerState, handlers: list):
+    """Set Player state handlers as callbacks."""
     _CALLBACKS[state] = handlers
 
 
-def map_buttons(state):
+def map_buttons(state: PlayerState):
     """Map current-state Buttons to function callbacks."""
     for button, handler in zip(_BUTTONS, _CALLBACKS[state]):
         button.when_pressed = handler

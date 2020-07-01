@@ -16,13 +16,14 @@ class GStreamer():
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
+        self._eos_callback = None
 
         Gst.init(None)
 
         self._mainloop = GLib.MainLoop.new(None, False)
-        mainloop_t = Thread(target=self._mainloop.run)
-        mainloop_t.daemon = True
-        mainloop_t.start()
+        self._mainloop_t = Thread(target=self._mainloop.run)
+        self._mainloop_t.daemon = True
+        self._mainloop_t.start()
 
         sink = Gst.ElementFactory.make('alsasink', 'sink')  # pirate-audio hat
         self._player = Gst.ElementFactory.make('playbin', 'player')
@@ -41,9 +42,7 @@ class GStreamer():
 
         if mtype == Gst.MessageType.EOS:
             self._player.set_state(Gst.State.NULL)
-
-            controller_ref = ActorRegistry.get_by_class_name('Controller')[0]
-            controller_ref.tell('eos')
+            self._eos_callback()
 
         elif mtype == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
@@ -57,7 +56,10 @@ class GStreamer():
             self._logger.error(err)
             self._logger.debug(debug)
 
-    def run(self, track):
+    def set_eos_callback(self, func):
+        self._eos_callback = func
+
+    def run(self, track: str):
         """Set uri as audio source and start playback."""
         self._player.set_property('uri', 'file://' + track)
         self._player.set_state(Gst.State.PLAYING)
@@ -74,7 +76,13 @@ class GStreamer():
     def stop(self):
         """Stop playback."""
         self._player.set_state(Gst.State.NULL)
+
+    def quit(self):
+        """Quit Glib mainloop and
+        wait for thread termination
+        """
         self._mainloop.quit()
+        self._mainloop_t.join()
 
     def volume_up(self):
         """Increase Player volume (max 1.0)."""

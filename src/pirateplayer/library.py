@@ -1,44 +1,49 @@
 # pylint: disable=missing-module-docstring
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 import logging
 import os
 
-import pirateplayer.utils.confparse as confparse
-
-Media = namedtuple('Media', ['path', 'name', 'isdir'])
+Media = namedtuple('Media', ['path', 'names', 'isdir'])
 
 
 class Library():
-    """MVC design pattern -> Model object.
-    Responsible for indexing every audio file supported.
+    """Component responsible for 
+    indexing every audio file supported.
     """
 
-    def __init__(self):
+    def __init__(self, root: str):
         self._logger = logging.getLogger(__name__)
 
-        root = confparse.get_root()
         ext = ('wav', 'flac', 'ogg', 'aac', 'mp3', 'm3u', 'm3u8')
 
         self._dirpath = list()
         self._dirpath.append(root + '/')
 
-        self._filetree = defaultdict()
+        self._filetree = {}
 
         for dirpath, dirnames, filenames in os.walk(root):
             dirpath += '/'
-            dirnames = sorted(dn + '/' for dn in dirnames)
-            filenames = sorted(fn for fn in filenames if fn.endswith(ext))
+
+            # prevent string unpacking if tuple has 
+            # only one element
+            if type(dirnames) is str:
+                dirnames = (dirnames,)
+            if type(filenames) is str:
+                filenames = (filenames,)
+            
+            dirnames = sorted(dn + '/' for dn in (dirnames))
+            filenames = sorted(fn for fn in (filenames) if fn.endswith(ext))
 
             self._filetree[dirpath] = dirnames + filenames
 
-    def list_files(self):
+    def list_files(self) -> list:
         """Retrieve current-directory available files.
         Current-directory is given by concatenating each element of _dirpath.
         """
         abspath = ''.join(self._dirpath)
         return self._filetree[abspath]
 
-    def get_next(self, index):
+    def retrieve_file(self, index: int) -> namedtuple:
         """Retrive actual file selection, then
         if its a dir, move inside.
         """
@@ -58,11 +63,11 @@ class Library():
         else:
             playlist = [filename]
 
-        media = Media(path=filepath, name=playlist, isdir=isdir)
+        media = Media(path=filepath, names=playlist, isdir=isdir)
 
         return media
 
-    def get_previous(self):
+    def browse_up(self):
         """Return to parent folder,
         but no further than music-root.
         """

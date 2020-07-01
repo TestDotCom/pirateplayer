@@ -12,8 +12,8 @@ _COLOR_FG = (255, 255, 255)
 
 # pylint: disable=too-many-instance-attributes
 class View():
-    """MVC design pattern -> View object.
-    Responsible for displaying audio tags and album cover.
+    """Component responsible for 
+    displaying audio tags and album cover.
 
     Default display specs:
         1.3" diagonal
@@ -31,9 +31,11 @@ class View():
         try:
             fontpath = resource_filename(
                 __name__,
-                'assets/NotoSansMono-ExtraCondensedSemiBold.ttf')
+                'assets/NotoSansMono-ExtraCondensedSemiBold.ttf'
+            )
 
             self._font = ImageFont.truetype(fontpath, 20)
+
         except IOError as ioe:
             self._logger.debug(ioe)
             self._font = ImageFont.load_default()
@@ -81,10 +83,15 @@ class View():
         """Draw a blank state."""
         self._ds.display(Image.new('RGB', self._size))
 
-    def display_track(self, path, media):
+    def display_track(self, path: str, media: str):
         """Draw album cover, then write album, title and artist.
         Place its cover.png image inside track folder.
         """
+        cover = None
+        album = ''
+        title = media
+        artist = ''
+
         try:
             cover = Image.open(path + 'cover.png')
             cover = cover.resize(self._size)
@@ -93,25 +100,20 @@ class View():
             self._logger.debug(fnf)
             cover = Image.new('RGB', self._size)
 
-        draw = ImageDraw.Draw(cover)
+        finally:
+            draw = ImageDraw.Draw(cover)
 
         try:
             info = mutagen.File(path + '/' + media)
 
             if 'album' in info:
                 album = info['album'][0]
-            else:
-                album = ''
 
             if 'title' in info:
                 title = info['title'][0]
-            else:
-                title = media
 
             if 'artist' in info:
                 artist = info['artist'][0]
-            else:
-                artist = ''
 
         except mutagen.MutagenError as mge:
             self._logger.debug(mge)
@@ -137,7 +139,7 @@ class View():
 
             self._ds.display(cover)
 
-    def update_menu(self, menu):
+    def update_menu(self, menu: list):
         """Update internal menu list, reset current screen edges."""
         self._menu = menu
         self.cursor = 0

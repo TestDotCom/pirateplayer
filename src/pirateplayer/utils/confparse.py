@@ -12,13 +12,13 @@ def init():
     _CONF.read(os.path.expanduser('~/.config/pirateplayer/conf.ini'))
 
 
-def get_root():
+def get_root() -> str:
     """Return user-defined music directory,
-    or default path if none specified.
+    or default path (~/Music) if none specified.
     """
     return os.path.expanduser(_CONF['PLAYER'].get('root', '~/Music'))
 
 
-def get_pins():
+def get_pins() -> list:
     """Return user-defined buttons pin (BCM numbering)."""
     return list(_CONF['BUTTON'].getint(btn) for btn in _CONF['BUTTON'])
